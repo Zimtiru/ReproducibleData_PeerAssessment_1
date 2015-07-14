@@ -50,7 +50,7 @@ The average total number of steps for  a whole day is 10766, while the median of
 mean(perday)
 median(perday)
 ```
-<h4> What is the average daily activity pattern?</h4>
+<h4> 3. What is the average daily activity pattern?</h4>
 Inorder to study our data during the day, it is necessary to aggregate the dataset by intervals.  Therefore this will create a per interval array  and a time series.
 
 Please keep in mind that the x-axis point labels are the names of the intervals in the dataset. The coding of the interval names is such, so that e.g. 500 should be conidered as 5:00 and 1000 as 10:00, ans so on. So, one can consider th x-axis as a fuull 24-hour-day starting from midnight and ending at the next midnight hour.
@@ -62,7 +62,7 @@ Finally, we find out that the interval with the maximum average number of steps 
 ```{r}
 dailyactivity[dailyactivity==max(dailyactivity)]
 ```
-<h4> 3 Inputing missing values </h4>
+<h4> 4. Inputing missing values </h4>
 That there are a number of days/intervals where there are missing values (labelled as NA). The presence of missing days may introduce bias into the calculations or summaries of the data. Therefore we need to check these missing values in th whole dataset before we go to our analysis.
 ```{r}
 sum(is.na(activity$steps))
