@@ -62,7 +62,7 @@ Finally, we find out that the interval with the maximum average number of steps 
 ```{r}
 dailyactivity[dailyactivity==max(dailyactivity)]
 ```
-<h4> Inputing missing values </h4>
+<h4> 3 Inputing missing values </h4>
 That there are a number of days/intervals where there are missing values (labelled as NA). The presence of missing days may introduce bias into the calculations or summaries of the data. Therefore we need to check these missing values in th whole dataset before we go to our analysis.
 ```{r}
 sum(is.na(activity$steps))
