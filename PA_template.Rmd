@@ -149,7 +149,13 @@ Rename the attributes
 ```{r, echo=FALSE}
 names(activity_patern_mean_data) <- c("Daytype", "Weekday", "Interval", "Mean")
 ```
+<<<<<<< HEAD
+```{r, echo=FALSE}
+library(lattice)
+```
+=======
 
+>>>>>>> FETCH_HEAD
 ```{r, echo=FALSE}
 xyplot(Mean ~ Interval | Daytype, activity_patern_mean_data, type="l", 
        main = "Daily Activity Pattern of Weekdays and Weekends",
