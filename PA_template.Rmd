@@ -1,0 +1,157 @@
+---
+title: "Reproducible Data Research Peer Assessment 1"
+author: "Anteneh"
+date: "July 16, 2015"
+output: html_document
+---
+<h4> 1. Loading and preprocessing the data</h4>
+Downloading the data set to the working directory and make ready for preprocessing the data.
+```{r}
+activity_new <- read.csv("activity.csv", stringsAsFactors=FALSE)
+names(activity_new)
+str(activity_new)
+```
+
+As we can see from the from the above summary, the dataset that the column containing the dates is not in a properly formatted way so we should adjust it as follow.
+```{r}
+activity_new$date <- as.POSIXct(activity_new$date, format="%Y-%m-%d")
+```
+<h4> 2. What is mean total number of steps taken per day?</h4>
+      
+And also there are missing values from the column of the steps.
+Since we have 2304 missing values, we have to exclude these missing values for our data analysis.Total number of missing values(NA's)
+
+```{r}
+sum(is.na(activity_new$steps))
+```
+
+```{r}
+activity_noNA<-activity_new[which(!is.na(activity_new$steps)),] 
+```
+```{r}
+activity_perday<-tapply(activity_noNA$steps, activity_noNA$date, sum)
+
+```
+
+Using the histogram we can see the mean and the median of number of steps per day.
+
+```{r}
+hist(activity_perday,breaks=seq(from=0, to=26000, by=2000),
+     col="Green", 
+     xlab="Total number of steps", 
+     ylim=c(0, 20), 
+     main="Total number of steps taken each day")
+```
+
+The mean and median of the total number of steps taken per a day without NA's are 10766.19 and 10765, respectively.
+
+```{r}
+mean(activity_perday)
+median(activity_perday)
+```
+<h4> 3. What is the average daily activity pattern?</h4>
+
+```{r}    
+mean_daily_activity<-tapply(activity_noNA$steps, activity_noNA$interval,mean)
+```
+
+```{r}
+activity_patern_mean_data <- aggregate(activity_noNA$steps, by=list(activity_noNA$interval),
+                       FUN=mean,na.rm=TRUE)
+```
+
+```{r}
+names(activity_patern_mean_data) <- c("interval", "mean")
+```
+
+```{r}
+head(activity_patern_mean_data)
+ ```
+Compute the time series plot
+
+```{r}
+plot(activity_patern_mean_data$interval, activity_patern_mean_data$mean, type="l",col="orange", 
+     lwd=2,xlab="5-minutes Interval", ylab="Average number of steps", 
+     main="The average number of steps per intervals without NA")
+```  
+The position of the maximum mean
+```{r}
+mean_daily_activity[mean_daily_activity==max(mean_daily_activity)]
+ ```
+The maximum average number of steps throughout the days is 835 with 206.1698 steps.
+
+<h4> 4. Filling the missing values </h4>
+Filling the missing values by the mean/median. From above we have 2304 missing valuse but we don't know the position of NA's. Find the position and create a vector of means/medians.
+
+```{r}
+#Finding the position of the NA's
+```
+```{r}
+NA_position <- which(is.na(activity_new$steps))
+```
+```{r}
+#Creating a vector 
+```
+```{r}
+Missing_mean_vector<- rep(mean(activity_new$steps, na.rm=TRUE), times=length(NA_position))
+```
+```{r}
+#Replacing NA's by mean
+```
+```{r}
+activity_new[NA_position, "steps"] <- Missing_mean_vector
+```
+Plot using Histogram for new activity data set where NA's are replaced by mean.
+
+```{r}
+activity_with_NA<-tapply(activity_new$steps, activity_new$date, sum)
+```
+```{r}
+hist(activity_with_NA,breaks=seq(from=0, to=26000, by=2000),
+     col="Green", xlab="Total number of steps",ylim=c(0, 25),
+     main="Average number of steps")
+```
+```{r}
+mean(activity_with_NA)
+median(activity_with_NA)
+```
+The mean and median of the total number of steps taken per a day with NA's are 10766 and 10766, respectively. The impact of the missing values on the mean is 0.19 where as the median is 1.0.
+
+ <h4> 5. Are there differences in activity patterns between weekdays and weekends? </h4>
+Inorder to answer this question we need create a new factor variable in the dataset with weekdays and weekend indicating whether a given date is a weekday or weekend.
+
+```{r, echo=FALSE}
+activity_new<- data.frame(date = activity_new$date, 
+                          weekday = tolower(weekdays(activity_new$date)),  
+                          steps=activity_new$steps, interval=activity_new$interval)
+```
+```{r, echo=FALSE}
+activity_new <- cbind(activity_new, daytype=ifelse(activity_new$weekday == "saturday" | 
+                activity_new$weekday == "sunday", "weekend", "weekday"))
+```
+
+```{r, echo=FALSE}
+activity_final <- data.frame(date=activity_new$date, 
+                       weekday=activity_new$weekday, 
+                       daytype=activity_new$daytype, 
+                       interval=activity_new$interval,
+                       steps=activity_new$steps)
+```
+
+Compute the average number of steps taken and then averaged across all daytype variable
+```{r, echo=FALSE}
+activity_patern_mean_data <- aggregate(activity_final$steps, 
+                       by=list(activity_final$daytype, 
+                               activity_final$weekday, activity_final$interval), mean)
+```
+
+Rename the attributes
+```{r, echo=FALSE}
+names(activity_patern_mean_data) <- c("Daytype", "Weekday", "Interval", "Mean")
+```
+
+```{r, echo=FALSE}
+xyplot(Mean ~ Interval | Daytype, activity_patern_mean_data, type="l", 
+       main = "Daily Activity Pattern of Weekdays and Weekends",
+       col="brown",lwd=2, xlab="Interval", ylab="Number of steps", layout=c(1,2))
+```
